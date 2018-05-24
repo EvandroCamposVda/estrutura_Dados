@@ -54,7 +54,7 @@ void apaga(){
 
 void pega(){
 	FILE *arqPEGA;
-	arqPEGA = fopen("pega.txt", "r");
+	arqPEGA = fopen("pre-ordem.txt", "r");
 	if (arqPEGA == NULL){
 		printf("ERROR 404 FILE NOT FOUND");
 	}
@@ -97,7 +97,6 @@ int main()
 
 	//menu de opsões
 
-	system("color 1f");
 	while (sair == 0){
 		system("cls");
 		printf("1--> Inserir elementos na arvore\n");
@@ -381,24 +380,25 @@ int main()
 
 						else if (test == 111){
 							arvore *temporaria = posicaoAtual;
-							temporaria = temporaria->direita;
-							while (temporaria->esquerda != NULL){
-								temporaria = temporaria->esquerda;
+							
+							temporaria = temporaria->esquerda;
+							
+							while (temporaria->direita != NULL){
+								temporaria = temporaria->direita;
 							}
-							posicaoAtual->valor = temporaria->valor;
-							arvore *ajuda = temporaria;
-							if (temporaria->direita == NULL){
-								ajuda = ajuda->ant;
-								ajuda->esquerda = NULL;
-							}
-							else
-							{
-								ajuda = ajuda->ant;
-								ajuda->esquerda = ajuda->esquerda->direita;
-								ajuda = ajuda->esquerda;
-								ajuda->ant = ajuda->ant->ant;
-							}
-							free(temporaria);
+							
+							printf ("%d", temporaria->valor);
+							
+							if (temporaria->esquerda == NULL){
+								posicaoAtual->valor = temporaria->valor;
+								temporaria->ant->direita = NULL;
+								free(temporaria);
+							}else {	
+								posicaoAtual->valor = temporaria->valor;
+								temporaria->ant->direita = temporaria->esquerda;
+								temporaria->esquerda->ant = temporaria->ant;
+								free(temporaria);
+							}							
 						}
 					}
 					test = 0;
