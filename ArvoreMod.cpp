@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <windows.h>
+#include <malloc.h>
 
 #define UM 49
 #define DOIS 50
@@ -29,7 +30,7 @@ struct arvore
 	struct arvore *ant;
 	struct arvore *direita;
 	struct arvore *esquerda;
-};
+} NO;
 
 arvore *atual = NULL;
 	arvore *posisaoAnterior = NULL;
@@ -43,6 +44,8 @@ int valores[50];
 int ops2 = 1, num;
 int cont = 0;
 int vetortxt[50];
+
+typedef struct arvore *PontNo;
 
 //GRAVA OS VALORES ORGANIZADOS EM "pre-ordem.txt"
 
@@ -94,6 +97,8 @@ void backup(arvore *raiz)
 		}
 	}
 }
+
+//typedef NO* PontNo;
 
 void apagar(){
 	arvore *temporaria = posicaoAtual;
@@ -150,6 +155,100 @@ void apagar(){
 	}
 }
 
+/* Exibe arvore Em Ordem         */
+void exibirArvoreEmOrdem(PontNo raiz){
+  	if (raiz == NULL) return;
+  	
+  	exibirArvoreEmOrdem(raiz->esquerda);
+  	printf("%i ",raiz->valor);
+  	exibirArvoreEmOrdem(raiz->direita);
+}
+
+/* Exibe arvore Pre Ordem         */
+void exibirArvorePreOrdem(PontNo raiz){
+  	if (raiz == NULL) return;
+  	printf("%i ",raiz->valor);
+  	exibirArvorePreOrdem(raiz->esquerda);
+  	exibirArvorePreOrdem(raiz->direita);
+}
+
+/* Exibe arvore Pos Ordem         */
+void exibirArvorePosOrdem(PontNo raiz){
+  	if (raiz == NULL) return;
+  	exibirArvorePosOrdem(raiz->esquerda);
+  	exibirArvorePosOrdem(raiz->direita);
+  	printf("%i ",raiz->valor);
+}
+
+
+void emOrdem(){
+	arvore *preOrdem= primeiro;
+	int vetor[20];
+	int i=0;
+	int flagD = 0;
+	int flagE = 0;
+	int flag = 0;
+	
+	for(int j=0;j<20;j++){
+		vetor[j] = 999;
+	}
+	
+	while(preOrdem->esquerda != NULL){
+		preOrdem = preOrdem->esquerda;
+	}
+	
+	vetor[i] = preOrdem->valor;
+	i++;
+	
+	for(;;){
+		for(int j=0;j<20;j++){
+			flag=0;
+			flagE=0;
+			flagD=0;
+			
+			if(vetor[j] == preOrdem->valor){
+				flag = 1;
+				printf("Flag\n\n");
+				break;
+			}else if (vetor[j] == preOrdem->esquerda->valor){
+				flagE = 1;
+				printf("FlagE\n\n");
+				break;
+			}else if (vetor[j] == preOrdem->direita->valor){
+				flagD = 1;
+				printf("FlagD\n\n");
+				break;
+			}else if (flag==1 && flagE==1 && flagD==1) {
+				preOrdem = preOrdem->ant;
+				printf("Voltei\n\n");
+				break;
+			}
+		}
+		
+			
+		if(flag == 0){
+			vetor[i] = preOrdem->valor;
+			i++;
+			printf("%d ", preOrdem->valor);
+		}else if(flagE == 0){
+			preOrdem = preOrdem->esquerda;
+			vetor[i] = preOrdem->valor;
+			i++;
+			printf("%d ", preOrdem->valor);
+		}else if(flagD == 0){
+			preOrdem = preOrdem->direita;
+			vetor[i] = preOrdem->valor;
+			i++;
+			printf("%d ", preOrdem->valor);
+		}
+	}
+	
+	
+	for(int j=0;j<20;j++){
+		printf("%d - ", vetor[j]);
+	}
+}
+
 int main()
 {
 	//menu de opsões
@@ -159,51 +258,17 @@ int main()
 		printf("1--> Inserir elementos na arvore\n");
 		printf("2--> Procurar um numero na arvore\n");
 		printf("3--> Percorer a arvore\n");
-		printf("4--> Backup\n");
-		printf("5--> Pega valor\n");
-		printf("6--> Sair ");
+		printf("4--> Em Ordem\n");
+		printf("5--> Pre-Ordem\n");
+		printf("6--> Pos-Ordem ");
 		ops = _getch();
 		if (ops == SEIS){
-			char a;
-			system("cls");
-			printf("Realmente deseja sair? (1 sair/2 continuar)\n");
-			a = _getch();
-			if ((a == UM)){
-				sair++;
-			}
+			exibirArvorePosOrdem(primeiro);
+			system("pause");
 		}
 		else if (ops==CINCO){
-			if (primeiro == NULL){
-				testarq = true;
-				pega();
-				for (i = 0; i <= quant; i++){
-					if (primeiro != NULL){
-						ajuda = vetortxt[i];
-						grava();
-					}
-					else{
-						system("cls");
-						aux = (struct arvore *)malloc(sizeof(struct arvore));
-						atual = aux;
-						aux->valor = vetortxt[i];
-						fflush(stdin);
-						aux->ant = NULL;
-						aux->direita = NULL;
-						aux->esquerda = NULL;
-						primeiro = aux;
-						posicaoAtual = aux;
-					}
-				}
-				system("cls");
-				printf("\n\nDados restaurados com sucesso!!! ");
-				_getch();
-			}
-			else{
-				system("cls");
-				printf("\n\nA arvore ja contem elementos!!!");
-				_getch();
-			}
-			testarq = false;
+			exibirArvorePreOrdem(primeiro);
+			system("pause");
 		}
 		else if (ops == QUATRO){
 			system("cls");
@@ -211,9 +276,9 @@ int main()
 				printf("\n\nArvore vazia!!!");
 			}
 			else{
-				apaga();
-				backup(primeiro);
-				grava();
+				exibirArvoreEmOrdem(primeiro);
+				printf("\n\n\n");
+				system("pause");
 
 			}
 		}
